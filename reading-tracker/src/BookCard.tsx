@@ -1,5 +1,5 @@
 //Book type
-type Book = {
+export type Book = {
   id: string
   title: string
   author: string
@@ -10,7 +10,14 @@ type Book = {
   dateAdded: number
 }
 
-function BookCard({book}: {book: Book}) {
+ type BookCardProps = {
+    book : Book
+    onDelete : (id: string) => void
+    onStatusChange : (id : string, status: Book['status']) => void
+    onRate : (id: string, rating: number) => void
+}
+
+function BookCard({book, onDelete, onStatusChange, onRate }: BookCardProps) {
   return ( //component skeleton
     <div>
       <h2>{book.title}</h2>
