@@ -10,15 +10,15 @@ export type Book = {
   dateAdded: number
 }
 
- type BookCardProps = {
-    book : Book
-    onDelete : (id: string) => void
-    onStatusChange : (id : string, status: Book['status']) => void
-    onRate : (id: string, rating: number) => void
+export type BookCardProps = {
+  book: Book
+  onDelete: (id: string) => void
+  onStatusChange: (id: string, status: Book['status']) => void
+  onRate: (id: string, rating: number) => void
 }
 
-function BookCard({book, onDelete, onStatusChange, onRate }: BookCardProps) {
-  return ( //component skeleton
+function BookCard({ book, onDelete, onStatusChange, onRate }: BookCardProps) {
+  return (
     <div>
       <h2>{book.title}</h2>
       <p>{book.author}</p>
@@ -26,8 +26,6 @@ function BookCard({book, onDelete, onStatusChange, onRate }: BookCardProps) {
       <p>{book.status}</p>
     </div>
   )
-
-
 }
 
 export default BookCard
