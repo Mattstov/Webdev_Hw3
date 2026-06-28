@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Book } from "./BookCard"
+import { type Book } from './BookCard'
 
 type SearchBarProps = {
   onAdd: (book: Book) => void
@@ -61,6 +61,15 @@ function SearchBar({onAdd}: SearchBarProps) {
             {apiResult.map(result => (
                 <div key={result.key}>
                     {result.title}
+                    <button onClick={() => onAdd({
+                        id: result.key,
+                        title: result.title,
+                        author: result.author_name?.[0] ?? 'Unknown',
+                        year: result.first_publish_year ?? 0,
+                        coverId: result.cover_i,
+                        status: 'to-read',
+                        dateAdded: Date.now()
+                        })}>add</button>
                 </div>
 
             ))}
