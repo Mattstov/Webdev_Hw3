@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -43,10 +46,6 @@
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
   }
 }
 

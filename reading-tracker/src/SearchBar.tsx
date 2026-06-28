@@ -3,7 +3,7 @@ import { type Book } from './BookCard'
 
 type SearchBarProps = {
   onAdd: (book: Book) => void
-
+  libraryIds: string[]
 }
 
 type SearchResult = {
@@ -14,68 +14,82 @@ type SearchResult = {
   cover_i?: number
 }
 
-function SearchBar({onAdd}: SearchBarProps) {
-    // handle what is expect of a search bar using useState hooks.
+function SearchBar({ onAdd, libraryIds }: SearchBarProps) {
+  const [typed, setTyped] = useState('')
+  const [apiResult, setApiResult] = useState<SearchResult[]>([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-    const [typed, setTyped] = useState('')
-    const [apiResult, setApiResult] = useState<SearchResult[]>([])
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState('')
-
-    // do the search as an async function
-    async function handleSearch() {
-        setError('');
-        try {
-            setLoading(true);
-
-            const response = await fetch(`https://openlibrary.org/search.json?q=${typed}&limit=10`)
-            
-            if (!response.ok) throw new Error('Bad response')
-
-            const data = await response.json()
-            setApiResult(data.docs)
-
-            setLoading(false) 
-        } catch (error) {
-            setError('Something went wrong. Please try again.');
-            setLoading(false) 
-        }
-        
+  async function handleSearch() {
+    setError('')
+    setApiResult([])
+    try {
+      setLoading(true)
+      const response = await fetch(
+        `https://openlibrary.org/search.json?q=${encodeURIComponent(typed)}&limit=10`
+      )
+      if (!response.ok) throw new Error('Bad response')
+      const data = await response.json() as { docs: SearchResult[] }
+      setApiResult(data.docs)
+    } catch {
+      setError('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
+  }
 
-    return(
-        <>
-            <form onSubmit={(e) => {
-                    e.preventDefault() 
-                    handleSearch()
-            }}>
+  return (
+    <div>
+      <form onSubmit={e => { e.preventDefault(); handleSearch() }}>
+        <input
+          type="text"
+          value={typed}
+          onChange={e => setTyped(e.target.value)}
+          placeholder="Search for a book..."
+        />
+        <button type="submit" disabled={loading || typed.trim() === ''}>
+          {loading ? 'Searching...' : 'Search'}
+        </button>
+      </form>
 
-                <input 
-                type="text"
-                value = {typed}
-                onChange={(e) => setTyped(e.target.value)}
-                />
-                <button type="submit">Submit</button>
-            </form>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-            {apiResult.map(result => (
-                <div key={result.key}>
-                    {result.title}
-                    <button onClick={() => onAdd({
-                        id: result.key,
-                        title: result.title,
-                        author: result.author_name?.[0] ?? 'Unknown',
-                        year: result.first_publish_year ?? 0,
-                        coverId: result.cover_i,
-                        status: 'to-read',
-                        dateAdded: Date.now()
-                        })}>add</button>
-                </div>
-
-            ))}
-        </>
-    )
-
+      {apiResult.length > 0 && (
+        <ul>
+          {apiResult.map(result => {
+            const alreadyAdded = libraryIds.includes(result.key)
+            const coverUrl = result.cover_i
+              ? `https://covers.openlibrary.org/b/id/${result.cover_i}-S.jpg`
+              : null
+            return (
+              <li key={result.key}>
+                {coverUrl && <img src={coverUrl} alt="" width={40} />}
+                <span>{result.title}</span>
+                {' — '}
+                <span>{result.author_name?.[0] ?? 'Unknown'}</span>
+                {result.first_publish_year ? ` (${result.first_publish_year})` : ''}
+                {' '}
+                <button
+                  disabled={alreadyAdded}
+                  onClick={() => onAdd({
+                    id: result.key,
+                    title: result.title,
+                    author: result.author_name?.[0] ?? 'Unknown',
+                    year: result.first_publish_year ?? 0,
+                    coverId: result.cover_i,
+                    status: 'to-read',
+                    dateAdded: Date.now(),
+                  })}
+                >
+                  {alreadyAdded ? 'Added' : 'Add'}
+                </button>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
+  )
 }
 
 export default SearchBar
