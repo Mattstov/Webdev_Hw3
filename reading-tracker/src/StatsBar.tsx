@@ -9,6 +9,7 @@ function StatsBar({ library }: StatsBarProps) {
   const reading = library.filter(b => b.status === 'reading').length
   const finished = library.filter(b => b.status === 'finished').length
 
+  // only average books that have actually been rated
   const ratedBooks = library.filter(b => b.status === 'finished' && b.rating !== undefined)
   const avgRating =
     ratedBooks.length > 0
@@ -18,16 +19,16 @@ function StatsBar({ library }: StatsBarProps) {
   if (library.length === 0) return null
 
   return (
-    <div className="flex flex-wrap gap-4 items-center px-4 py-3 mb-6 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-300">
-      <span><span className="font-semibold text-gray-900 dark:text-white">{toRead}</span> to read</span>
+    <div className="flex flex-wrap gap-3 items-center px-4 py-3 mb-6 rounded-xl bg-gray-100 dark:bg-gray-800 text-sm text-gray-600 dark:text-gray-400">
+      <span><strong className="text-gray-900 dark:text-white">{toRead}</strong> to read</span>
       <span className="text-gray-300 dark:text-gray-600">·</span>
-      <span><span className="font-semibold text-gray-900 dark:text-white">{reading}</span> reading</span>
+      <span><strong className="text-gray-900 dark:text-white">{reading}</strong> reading</span>
       <span className="text-gray-300 dark:text-gray-600">·</span>
-      <span><span className="font-semibold text-gray-900 dark:text-white">{finished}</span> finished</span>
+      <span><strong className="text-gray-900 dark:text-white">{finished}</strong> finished</span>
       {avgRating && (
         <>
           <span className="text-gray-300 dark:text-gray-600">·</span>
-          <span>avg rating <span className="font-semibold text-gray-900 dark:text-white">★ {avgRating}</span></span>
+          <span>avg rating <strong className="text-gray-900 dark:text-white">{avgRating}</strong></span>
         </>
       )}
     </div>
